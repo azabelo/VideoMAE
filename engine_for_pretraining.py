@@ -128,15 +128,15 @@ def train_one_epoch(model: torch.nn.Module, data_loader: Iterable, optimizer: to
 def log_knn_acc(data_for_knn, model):
 
     # lightly knn
-    train_videos = torch.empty((0, 768), device='cuda')
-    test_videos = torch.empty((0, 768), device='cuda')
+    train_videos = torch.empty((0, 1536), device='cuda')
+    test_videos = torch.empty((0, 1536), device='cuda')
     train_labels = torch.empty(0, device='cuda')
     test_labels = torch.empty(0, device='cuda')
 
     # my implementation of knn
     knn_classifier3 = KNeighborsClassifier(n_neighbors=3, algorithm='brute', metric='cosine')
-    train_videos_np = np.empty((0, 768))
-    test_videos_np = np.empty((0, 768))
+    train_videos_np = np.empty((0, 1536))
+    test_videos_np = np.empty((0, 1536))
     train_labels_np = np.empty(0)
     test_labels_np = np.empty(0)
 
