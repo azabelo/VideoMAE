@@ -18,7 +18,7 @@ from sklearn.neighbors import KNeighborsClassifier
 def train_one_epoch(model: torch.nn.Module, data_loader: Iterable, optimizer: torch.optim.Optimizer,
                     device: torch.device, epoch: int, loss_scaler, max_norm: float = 0, patch_size: int = 16, 
                     normlize_target: bool = True, log_writer=None, lr_scheduler=None, start_steps=None,
-                    lr_schedule_values=None, wd_schedule_values=None, data_for_knn=None, update_freq=1):
+                    lr_schedule_values=None, wd_schedule_values=None, data_for_knn=None, update_freq=None):
 
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -72,7 +72,6 @@ def train_one_epoch(model: torch.nn.Module, data_loader: Iterable, optimizer: to
             print("Loss is {}, stopping training".format(loss_value))
             sys.exit(1)
 
-        optimizer.zero_grad()
         # this attribute is added by timm on one optimizer (adahessian)
         is_second_order = hasattr(optimizer, 'is_second_order') and optimizer.is_second_order
         loss /= update_freq
