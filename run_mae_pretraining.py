@@ -8,12 +8,14 @@ import json
 import os
 from pathlib import Path
 from timm.models import create_model
+import wandb
 from optim_factory import create_optimizer
-from datasets import build_pretraining_dataset
+from datasets import build_pretraining_dataset, build_dataset
 from engine_for_pretraining import train_one_epoch
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
 import modeling_pretrain
+import copy
 
 
 def get_args():
@@ -132,6 +134,12 @@ def get_model(args):
 
 
 def main(args):
+    run_name = f"bs: {args.batch_size}, update: {args.update_freq}, lr: {args.lr}, epochs: {args.epochs}, \
+    warmup: {args.warmup_epochs}, sapling: {args.sampling_rate}"
+    wandb.init(project='MVD+CLIP pretraining sweep with kNN', name=run_name)
+    # Log the arguments to wandb
+    wandb.config.update(args)
+
     utils.init_distributed_mode(args)
 
     print(args)
@@ -153,6 +161,29 @@ def main(args):
 
     # get dataset
     dataset_train = build_pretraining_dataset(args)
+
+
+    args2 = copy.deepcopy(args)
+    args2.data_set = 'HMDB51'
+    args2.nb_classes = 51
+    args2.data_path = 'finetune_splits'
+    args2.test_num_segment = 8
+    args2.test_num_crop = 1
+    args2.short_side_size = 256
+    args2.batch_size = 8
+    dataset_val, _ = build_dataset(is_train=False, test_mode=False, args=args2)
+    num_tasks = utils.get_world_size()
+    global_rank = utils.get_rank()
+    sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    # dont forget that you added shuffle and took something out
+    data_loader_val = torch.utils.data.DataLoader(
+        dataset_val,
+        batch_size=int(args.batch_size),
+        num_workers=args.num_workers,
+        pin_memory=args.pin_mem,
+        drop_last=False,
+        shuffle=True
+    )
 
 
     num_tasks = utils.get_world_size()
