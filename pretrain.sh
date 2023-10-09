@@ -21,4 +21,4 @@ OMP_NUM_THREADS=1 python3 -m torch.distributed.launch --nproc_per_node=4 \
           --log_dir ${OUTPUT_DIR} \
           --output_dir ${OUTPUT_DIR} \
           --lr 3e-4 \
-          --update_freq 1
+          --update_freq 16
