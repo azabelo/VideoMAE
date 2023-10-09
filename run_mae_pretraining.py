@@ -213,6 +213,12 @@ def main(args):
         worker_init_fn=utils.seed_worker
     )
 
+    print("len of dataset: ", len(dataset_train))
+    print("len of dataloader: ", len(data_loader_train))
+    print("batch size: ", args.batch_size)
+    print("total batch size: ", args.batch_size * num_tasks * args.update_freq)
+    print("num training steps per epoch: ", len(dataset_train) // (args.batch_size * num_tasks * args.update_freq))
+
     model.to(device)
     model_without_ddp = model
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
