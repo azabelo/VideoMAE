@@ -190,7 +190,7 @@ def main(args):
     global_rank = utils.get_rank()
     sampler_rank = global_rank
 
-    total_batch_size = args.batch_size * num_tasks
+    total_batch_size = args.batch_size * num_tasks * args.update_freq
     num_training_steps_per_epoch = len(dataset_train) // total_batch_size
 
     sampler_train = torch.utils.data.DistributedSampler(
@@ -257,7 +257,7 @@ def main(args):
         if args.distributed:
             data_loader_train.sampler.set_epoch(epoch)
         if log_writer is not None:
-            log_writer.set_step(epoch * num_training_steps_per_epoch)
+            log_writer.set_step(epoch * num_training_steps_per_epoch * args.update_freq)
 
         # only do the knn acc for every 100th epoch ( make this a cmd line arg )
 
@@ -274,7 +274,8 @@ def main(args):
             wd_schedule_values=wd_schedule_values,
             patch_size=patch_size[0],
             normlize_target=args.normlize_target,
-            data_for_knn=data_for_knn_arg
+            data_for_knn=data_for_knn_arg,
+            update_freq=args.update_freq
         )
         if args.output_dir:
             if (epoch + 1) % args.save_ckpt_freq == 0 or epoch + 1 == args.epochs:

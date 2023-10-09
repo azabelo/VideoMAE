@@ -18,7 +18,7 @@ from sklearn.neighbors import KNeighborsClassifier
 def train_one_epoch(model: torch.nn.Module, data_loader: Iterable, optimizer: torch.optim.Optimizer,
                     device: torch.device, epoch: int, loss_scaler, max_norm: float = 0, patch_size: int = 16, 
                     normlize_target: bool = True, log_writer=None, lr_scheduler=None, start_steps=None,
-                    lr_schedule_values=None, wd_schedule_values=None, data_for_knn=None):
+                    lr_schedule_values=None, wd_schedule_values=None, data_for_knn=None, update_freq=1):
 
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -31,8 +31,9 @@ def train_one_epoch(model: torch.nn.Module, data_loader: Iterable, optimizer: to
 
     for step, batch in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         # assign learning rate & weight decay for each step
-        it = start_steps + step  # global training iteration
-        if lr_schedule_values is not None or wd_schedule_values is not None:
+        update_step = step // update_freq
+        it = start_steps + update_step  # global training iteration
+        if lr_schedule_values is not None or wd_schedule_values is not None and step % update_freq == 0:
             for i, param_group in enumerate(optimizer.param_groups):
                 if lr_schedule_values is not None:
                     param_group["lr"] = lr_schedule_values[it] * param_group["lr_scale"]
@@ -74,8 +75,12 @@ def train_one_epoch(model: torch.nn.Module, data_loader: Iterable, optimizer: to
         optimizer.zero_grad()
         # this attribute is added by timm on one optimizer (adahessian)
         is_second_order = hasattr(optimizer, 'is_second_order') and optimizer.is_second_order
+        loss /= update_freq
         grad_norm = loss_scaler(loss, optimizer, clip_grad=max_norm,
-                                parameters=model.parameters(), create_graph=is_second_order)
+                                parameters=model.parameters(), create_graph=is_second_order,
+                                update_grad=(step + 1) % update_freq == 0)
+        if (step + 1) % update_freq == 0:
+            optimizer.zero_grad()
         loss_scale_value = loss_scaler.state_dict()["scale"]
 
         torch.cuda.synchronize()
