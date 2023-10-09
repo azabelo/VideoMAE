@@ -19,6 +19,10 @@ def train_one_epoch(model: torch.nn.Module, data_loader: Iterable, optimizer: to
                     device: torch.device, epoch: int, loss_scaler, max_norm: float = 0, patch_size: int = 16, 
                     normlize_target: bool = True, log_writer=None, lr_scheduler=None, start_steps=None,
                     lr_schedule_values=None, wd_schedule_values=None, data_for_knn=None):
+
+    if data_for_knn is not None:
+        log_knn_acc(data_for_knn, model)
+
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
@@ -143,7 +147,7 @@ def log_knn_acc(data_for_knn, model):
             index += 1
             videos, labels, _ = batch
             # make an empty tensor of False values with shape [bs, 1568]
-            empty_mask = torch.zeros((videos.shape[0], 768), dtype=torch.bool)
+            empty_mask = torch.zeros((videos.shape[0], 1568), dtype=torch.bool)
             output_features_for_knn = model(videos.cuda(), empty_mask.cuda())
             # output_features_video_for_knn = output_features_video_for_knn.cpu().numpy()
             cls_tok_knn = output_features_for_knn[:, 0, :]
