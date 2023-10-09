@@ -154,7 +154,7 @@ def log_knn_acc(data_for_knn, model):
             cls_tok_knn = output_features_for_knn[:, 0, :]
             cls_tok_knn = F.normalize(cls_tok_knn, dim=1)
             cls_tok_knn = cls_tok_knn.cuda()
-            if index > 100:
+            if index > 50:
                 # move to cuda if not already
                 test_labels = test_labels.cuda()
                 test_videos = test_videos.cuda()
