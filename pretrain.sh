@@ -1,5 +1,5 @@
 OUTPUT_DIR='YOUR_PATH/k400_videomae_pretrain_base_patch16_224_frame_16x4_tube_mask_ratio_0.9_e800'
-DATA_PATH='train.csv'
+DATA_PATH='pretrain.csv'
 
 OMP_NUM_THREADS=1 python3 -m torch.distributed.launch --nproc_per_node=1 \
           --master_port 21416 --nnodes=1 \
