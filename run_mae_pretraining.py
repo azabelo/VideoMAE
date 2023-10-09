@@ -258,6 +258,13 @@ def main(args):
             data_loader_train.sampler.set_epoch(epoch)
         if log_writer is not None:
             log_writer.set_step(epoch * num_training_steps_per_epoch)
+
+        # only do the knn acc for every 100th epoch ( make this a cmd line arg )
+
+        data_for_knn_arg = None
+        if epoch % 1 == 0:
+            data_for_knn_arg = data_loader_val
+
         train_stats = train_one_epoch(
             model, data_loader_train,
             optimizer, device, epoch, loss_scaler,
@@ -267,6 +274,7 @@ def main(args):
             wd_schedule_values=wd_schedule_values,
             patch_size=patch_size[0],
             normlize_target=args.normlize_target,
+            data_for_knn=data_for_knn_arg
         )
         if args.output_dir:
             if (epoch + 1) % args.save_ckpt_freq == 0 or epoch + 1 == args.epochs:
