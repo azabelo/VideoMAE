@@ -10,7 +10,7 @@ OMP_NUM_THREADS=1 python3 -m torch.distributed.launch --nproc_per_node=4 \
           --mask_ratio 0.9 \
           --model pretrain_videomae_base_patch16_224 \
           --decoder_depth 4 \
-          --batch_size 32 \
+          --batch_size 16 \
           --num_frames 16 \
           --sampling_rate 4 \
           --opt adamw \
@@ -21,4 +21,4 @@ OMP_NUM_THREADS=1 python3 -m torch.distributed.launch --nproc_per_node=4 \
           --log_dir ${OUTPUT_DIR} \
           --output_dir ${OUTPUT_DIR} \
           --lr 3e-4 \
-          --update_freq 1
+          --update_freq 2
