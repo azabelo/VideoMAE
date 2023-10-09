@@ -166,7 +166,7 @@ def main(args):
     args2 = copy.deepcopy(args)
     args2.data_set = 'HMDB51'
     args2.nb_classes = 51
-    args2.data_path = 'finetune_splits'
+    args2.data_path = 'official_splits'
     args2.test_num_segment = 8
     args2.test_num_crop = 1
     args2.short_side_size = 256
