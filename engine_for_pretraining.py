@@ -143,7 +143,7 @@ def log_knn_acc(data_for_knn, model):
             index += 1
             videos, labels, _ = batch
             # make an empty tensor of False values with shape [bs, 1568]
-            empty_mask = torch.zeros((videos.shape[0], 1568), dtype=torch.bool)
+            empty_mask = torch.zeros((videos.shape[0], 768), dtype=torch.bool)
             output_features_for_knn = model(videos.cuda(), empty_mask.cuda())
             # output_features_video_for_knn = output_features_video_for_knn.cpu().numpy()
             cls_tok_knn = output_features_for_knn[:, 0, :]
