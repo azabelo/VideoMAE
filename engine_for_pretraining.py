@@ -20,9 +20,6 @@ def train_one_epoch(model: torch.nn.Module, data_loader: Iterable, optimizer: to
                     normlize_target: bool = True, log_writer=None, lr_scheduler=None, start_steps=None,
                     lr_schedule_values=None, wd_schedule_values=None, data_for_knn=None):
 
-    if data_for_knn is not None:
-        log_knn_acc(data_for_knn, model)
-
     model.train()
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
