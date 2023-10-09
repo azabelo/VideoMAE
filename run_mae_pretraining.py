@@ -136,7 +136,7 @@ def get_model(args):
 def main(args):
     run_name = f"bs: {args.batch_size}, update: {args.update_freq}, lr: {args.lr}, epochs: {args.epochs}, \
     warmup: {args.warmup_epochs}, sapling: {args.sampling_rate}"
-    wandb.init(project='MVD+CLIP pretraining sweep with kNN', name=run_name)
+    wandb.init(project='videoMAE benchmarking', name=run_name)
     # Log the arguments to wandb
     wandb.config.update(args)
 
